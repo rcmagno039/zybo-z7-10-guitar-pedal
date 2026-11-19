@@ -26,17 +26,14 @@ src/demo.o src/demo.o: ../src/demo.c ../src/demo.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xaxidma_hw.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xdebug.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xil_cache.h \
- ../src/audio/../demo.h ../src/dma/dma.h ../src/intc/intc.h \
+ ../src/audio/../demo.h ../src/dma/dma.h ../src/iic/iic.h \
+ ../src/intc/intc.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xscugic.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xscugic_hw.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xil_exception.h \
  ../src/userio/userio.h \
  C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xgpio.h \
- C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xgpio_l.h \
- ../src/iic/iic.h \
- C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xil_exception.h \
- C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xdebug.h \
- C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xtime_l.h
+ C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xgpio_l.h
 
 ../src/demo.h:
 
@@ -98,6 +95,8 @@ C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_
 
 ../src/dma/dma.h:
 
+../src/iic/iic.h:
+
 ../src/intc/intc.h:
 
 C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xscugic.h:
@@ -111,11 +110,3 @@ C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_
 C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xgpio.h:
 
 C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xgpio_l.h:
-
-../src/iic/iic.h:
-
-C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xil_exception.h:
-
-C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xdebug.h:
-
-C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include/xtime_l.h:

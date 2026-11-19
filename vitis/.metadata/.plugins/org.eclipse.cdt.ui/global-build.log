@@ -1317,3 +1317,132 @@ generate_system_bif.bat 61041 C:/Users/benteslp/Documents/PSN50/vitis/system_wra
 sdcard_gen --xpfm C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/system_wrapper_v1.xpfm --sys_config system_wrapper_v1 --bif C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/system.bif --bitstream C:/Users/benteslp/Documents/PSN50/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit --elf C:/Users/benteslp/Documents/PSN50/vitis/audio_app/Debug/audio_app.elf,ps7_cortexa9_0
 creating BOOT.BIN using C:/Users/benteslp/Documents/PSN50/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
 Running C:/Xilinx/Vitis/2019.2/bin/bootgen  -image C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/sd_card_temp/boot.bif -w -o i BOOT.BIN
+Nothing to build in platform 'system_wrapper_v1'
+
+Nothing to build in platform 'system_wrapper_v1'
+
+13:15:48 **** Incremental Build of configuration Debug for project audio_app ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+' '
+make --no-print-directory main-build
+'Building file: ../src/demo.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/demo.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include -MMD -MP -MF"src/demo.d" -MT"src/demo.o" -o "src/demo.o" "../src/demo.c"
+../src/demo.c:44:6: error: 'XPAR_FABRIC_AXI_DMA_0_INTR_1' undeclared here (not in a function); did you mean 'XPAR_FABRIC_AXI_DMA_0_MM2S_INTROUT_INTR'?
+     {XPAR_FABRIC_AXI_DMA_0_INTR_1, (XInterruptHandler)fnS2MMInterruptHandler, &sAxiDma},
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~~
+      XPAR_FABRIC_AXI_DMA_0_MM2S_INTROUT_INTR
+../src/demo.c:45:6: error: 'XPAR_FABRIC_AXI_DMA_0_INTR' undeclared here (not in a function); did you mean 'XPAR_FABRIC_IIC_0_VEC_ID'?
+     {XPAR_FABRIC_AXI_DMA_0_INTR,   (XInterruptHandler)fnMM2SInterruptHandler, &sAxiDma},
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~
+      XPAR_FABRIC_IIC_0_VEC_ID
+../src/demo.c:46:6: error: 'XPAR_FABRIC_AXI_GPIO_0_INTR' undeclared here (not in a function); did you mean 'XPAR_PS7_GPIO_0_INTR'?
+     {XPAR_FABRIC_AXI_GPIO_0_INTR,  (XInterruptHandler)fnUserIOIsr, &sUserIO}
+      ^~~~~~~~~~~~~~~~~~~~~~~~~~~
+      XPAR_PS7_GPIO_0_INTR
+make[1]: *** [src/subdir.mk:26: src/demo.o] Error 1
+make: *** [makefile:39: all] Error 2
+13:24:49 **** Incremental Build of configuration Debug for project audio_app ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+' '
+make --no-print-directory main-build
+'Building file: ../src/demo.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/demo.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include -MMD -MP -MF"src/demo.d" -MT"src/demo.o" -o "src/demo.o" "../src/demo.c"
+../src/demo.c:42:1: error: expected identifier or '(' before '{' token
+ {XPAR_FABRIC_AXI_DMA_0_S2MM_INTROUT_INTR, (XInterruptHandler)fnS2MMInterruptHandler, &sAxiDma},
+ ^
+../src/demo.c:42:95: error: expected identifier or '(' before ',' token
+ {XPAR_FABRIC_AXI_DMA_0_S2MM_INTROUT_INTR, (XInterruptHandler)fnS2MMInterruptHandler, &sAxiDma},
+                                                                                               ^
+../src/demo.c:43:95: error: expected identifier or '(' before ',' token
+ {XPAR_FABRIC_AXI_DMA_0_MM2S_INTROUT_INTR, (XInterruptHandler)fnMM2SInterruptHandler, &sAxiDma},
+                                                                                               ^
+../src/demo.c: In function 'main':
+../src/demo.c:111:32: error: 'ivt' undeclared (first use in this function); did you mean 'int'?
+     fnEnableInterrupts(&sIntc, ivt, sizeof(ivt) / sizeof(ivt[0]));
+                                ^~~
+                                int
+../src/demo.c:111:32: note: each undeclared identifier is reported only once for each function it appears in
+make[1]: *** [src/subdir.mk:26: src/demo.o] Error 1
+make: *** [makefile:39: all] Error 2
+13:25:15 **** Incremental Build of configuration Debug for project audio_app ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+' '
+make --no-print-directory main-build
+'Building file: ../src/demo.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/demo.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include -MMD -MP -MF"src/demo.d" -MT"src/demo.o" -o "src/demo.o" "../src/demo.c"
+../src/demo.c:42:1: error: expected identifier or '(' before '{' token
+ {XPAR_FABRIC_AXI_DMA_0_S2MM_INTROUT_INTR, (XInterruptHandler)fnS2MMInterruptHandler, &sAxiDma};
+ ^
+../src/demo.c:43:1: error: expected identifier or '(' before '{' token
+ {XPAR_FABRIC_AXI_DMA_0_MM2S_INTROUT_INTR, (XInterruptHandler)fnMM2SInterruptHandler, &sAxiDma};
+ ^
+../src/demo.c:44:1: error: expected identifier or '(' before '{' token
+ {XPAR_FABRIC_AXI_GPIO_0_IP2INTC_IRPT_INTR, (XInterruptHandler)fnUserIOIsr, &sUserIO};
+ ^
+../src/demo.c: In function 'main':
+../src/demo.c:111:32: error: 'ivt' undeclared (first use in this function); did you mean 'int'?
+     fnEnableInterrupts(&sIntc, ivt, sizeof(ivt) / sizeof(ivt[0]));
+                                ^~~
+                                int
+../src/demo.c:111:32: note: each undeclared identifier is reported only once for each function it appears in
+make[1]: *** [src/subdir.mk:26: src/demo.o] Error 1
+make: *** [makefile:39: all] Error 2
+13:27:32 **** Incremental Build of configuration Debug for project audio_app ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+' '
+make --no-print-directory main-build
+'Building file: ../src/demo.c'
+'Invoking: ARM v7 gcc compiler'
+arm-none-eabi-gcc -Wall -O0 -g3 -c -fmessage-length=0 -MT"src/demo.o" -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -IC:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bspinclude/include -MMD -MP -MF"src/demo.d" -MT"src/demo.o" -o "src/demo.o" "../src/demo.c"
+'Finished building: ../src/demo.c'
+' '
+'Building target: audio_app.elf'
+'Invoking: ARM v7 gcc linker'
+arm-none-eabi-gcc -mcpu=cortex-a9 -mfpu=vfpv3 -mfloat-abi=hard -Wl,-build-id=none -specs=Xilinx.spec -Wl,-T -Wl,../src/lscript.ld -LC:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/sw/system_wrapper_v1/standalone_domain/bsplib/lib -o "audio_app.elf"  ./src/userio/userio.o  ./src/intc/intc.o  ./src/iic/iic.o  ./src/dma/dma.o  ./src/audio/audio.o  ./src/demo.o ./src/platform.o   -Wl,--start-group,-lxil,-lgcc,-lc,--end-group
+'Finished building target: audio_app.elf'
+' '
+'Invoking: ARM v7 Print Size'
+arm-none-eabi-size audio_app.elf  |tee "audio_app.elf.size"
+   text	   data	    bss	    dec	    hex	filename
+  60676	   3488	  33584	  97748	  17dd4	audio_app.elf
+'Finished building: audio_app.elf.size'
+' '
+13:27:43 **** Incremental Build of configuration Debug for project audio_app ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+' '
+make --no-print-directory main-build
+make[1]: Nothing to be done for 'main-build'.
+13:28:00 **** Incremental Build of configuration Debug for project audio_app_system ****
+make all 
+Generating bif file for the system project
+generate_system_bif.bat 52395 C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/system_wrapper_v1.xpfm standalone_domain C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/system.bif
+sdcard_gen --xpfm C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/system_wrapper_v1.xpfm --sys_config system_wrapper_v1 --bif C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/system.bif --bitstream C:/Users/benteslp/Documents/PSN50/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit --elf C:/Users/benteslp/Documents/PSN50/vitis/audio_app/Debug/audio_app.elf,ps7_cortexa9_0
+creating BOOT.BIN using C:/Users/benteslp/Documents/PSN50/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+Running C:/Xilinx/Vitis/2019.2/bin/bootgen  -image C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/sd_card_temp/boot.bif -w -o i BOOT.BIN
+13:35:11 **** Incremental Build of configuration Debug for project audio_app ****
+make all 
+make --no-print-directory pre-build
+a9-linaro-pre-build-step
+' '
+make --no-print-directory main-build
+make[1]: Nothing to be done for 'main-build'.
+13:35:14 **** Incremental Build of configuration Debug for project audio_app_system ****
+make all 
+Generating bif file for the system project
+generate_system_bif.bat 52395 C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/system_wrapper_v1.xpfm standalone_domain C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/system.bif
+sdcard_gen --xpfm C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/system_wrapper_v1.xpfm --sys_config system_wrapper_v1 --bif C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/system.bif --bitstream C:/Users/benteslp/Documents/PSN50/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit --elf C:/Users/benteslp/Documents/PSN50/vitis/audio_app/Debug/audio_app.elf,ps7_cortexa9_0
+creating BOOT.BIN using C:/Users/benteslp/Documents/PSN50/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+Running C:/Xilinx/Vitis/2019.2/bin/bootgen  -image C:/Users/benteslp/Documents/PSN50/vitis/audio_app_system/Debug/sd_card_temp/boot.bif -w -o i BOOT.BIN

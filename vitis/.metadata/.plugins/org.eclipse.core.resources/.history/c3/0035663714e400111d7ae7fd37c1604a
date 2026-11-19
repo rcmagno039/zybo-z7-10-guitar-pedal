@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="ASCII"?>
+<sdkproject:SdkProject xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:sdkproject="http://www.xilinx.com/sdkproject" name="audio_app" location="C:/Users/benteslp/Documents/PSN50/vitis/audio_app" platform="C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/system_wrapper_v1.xpfm" platformUID="xilinx:zybo-z7-10::0.0(custom)" systemProject="audio_app_system" sysConfig="system_wrapper_v1" runtime="cpp" cpu="standalone_domain" cpuInstance="ps7_cortexa9_0" os="standalone" mssSignature="0b70dcef7c7d836c36eb88b46b92b87d">
+  <configuration name="Debug" id="xilinx.gnu.armv7.exe.debug.568936219" dirty="true">
+    <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
+    <lastBuildOptions xsi:type="sdkproject:SdkOptions"/>
+  </configuration>
+  <configuration name="Release" id="xilinx.gnu.armv7.exe.release.1525456764" dirty="true">
+    <configBuildOptions xsi:type="sdkproject:SdkOptions"/>
+  </configuration>
+  <template appTemplateName="empty_application"/>
+</sdkproject:SdkProject>

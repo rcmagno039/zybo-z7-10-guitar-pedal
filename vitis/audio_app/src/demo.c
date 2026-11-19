@@ -1,486 +1,204 @@
-/************************************************************************/
-/*																		*/
-/*	demo.c	--	Zybo DMA Demo				 						*/
-/*																		*/
-/************************************************************************/
-/*	Author: Sam Lowe											*/
-/*	Copyright 2015, Digilent Inc.										*/
-/************************************************************************/
-/*  Module Description: 												*/
-/*																		*/
-/*		This file contains code for running a demonstration of the		*/
-/*		DMA audio inputs and outputs on the Zybo.					*/
-/*																		*/
-/*																		*/
-/************************************************************************/
-/*  Notes:																*/
-/*																		*/
-/*		- The DMA max burst size needs to be set to 16 or less			*/
-/*																		*/
-/************************************************************************/
-/*  Revision History:													*/
-/* 																		*/
-/*		9/6/2016(SamL): Created										*/
-/*																		*/
-/************************************************************************/
-
-
+/*
+ * PSN50 - passthrough de audio por blocos, RX e TX simultaneos.
+ * Zybo Z7-10 / Vitis 2025.1 / AXI DMA Simple Mode.
+ *
+ * Substituir o conteudo de src/demo.c por este arquivo DEPOIS de fazer backup.
+ * Utiliza os modulos audio/, dma/, iic/, intc/, userio/ ja adaptados.
+ *
+ * IMPORTANTE: prototipo de streaming por blocos, nao garante ausencia de
+ * descontinuidades na borda dos blocos com DMA em Simple Mode.
+ */
 #include "demo.h"
-
-
-
-
 #include "audio/audio.h"
 #include "dma/dma.h"
+#include "iic/iic.h"
 #include "intc/intc.h"
 #include "userio/userio.h"
-#include "iic/iic.h"
-
-/***************************** Include Files *********************************/
 
 #include "xaxidma.h"
+#include "xgpio.h"
+#include "xscugic.h"
 #include "xparameters.h"
-#include "xil_exception.h"
-#include "xdebug.h"
-#include "xiic.h"
-#include "xaxidma.h"
-#include "xtime_l.h"
-
-
-#ifdef XPAR_INTC_0_DEVICE_ID
- #include "xintc.h"
- #include "microblaze_sleep.h"
-#else
- #include "xscugic.h"
-#include "sleep.h"
 #include "xil_cache.h"
-#endif
+#include "xil_io.h"
+#include "xil_printf.h"
+#include "xstatus.h"
+#include "sleep.h"
 
-/************************** Constant Definitions *****************************/
+#define BLOCK_WORDS 1024U             /* palavras AXI de 32 bits */
+#define BLOCK_BYTES (4U * BLOCK_WORDS)
+#define I2S_S2MM_EN 0x00000001U       /* stream bit 0: I2S -> DDR */
+#define I2S_MM2S_EN 0x00000002U       /* stream bit 1: DDR -> I2S */
 
-/*
- * Device hardware build related constants.
- */
+/* Alocado automaticamente pelo linker na DDR, 64-byte aligned. */
+static u32 audio_buffers[2][BLOCK_WORDS] __attribute__((aligned(64)));
 
-// Audio constants
-// Number of seconds to record/playback
-#define NR_SEC_TO_REC_PLAY		1
-
-// ADC/DAC sampling rate in Hz
-//#define AUDIO_SAMPLING_RATE		1000
-#define AUDIO_SAMPLING_RATE	  96000
-
-// Number of samples to record/playback
-#define NR_AUDIO_SAMPLES		(NR_SEC_TO_REC_PLAY*AUDIO_SAMPLING_RATE)
-
-/* Timeout loop counter for reset
- */
-#define RESET_TIMEOUT_COUNTER	10000
-
-#define TEST_START_VALUE	0x0
-
-
-/**************************** Type Definitions *******************************/
-
-
-/***************** Macros (Inline Functions) Definitions *********************/
-
-
-/************************** Function Prototypes ******************************/
-#if (!defined(DEBUG))
-extern void xil_printf(const char *format, ...);
-#endif
-
-
-/************************** Variable Definitions *****************************/
-/*
- * Device instance definitions
- */
-
+volatile sDemo_t Demo;
 static XIic sIic;
-static XAxiDma sAxiDma;		/* Instance of the XAxiDma */
-
+static XAxiDma sAxiDma;
 static XGpio sUserIO;
+static XScuGic sIntc;
 
-#ifdef XPAR_INTC_0_DEVICE_ID
- static XIntc sIntc;
-#else
- static XScuGic sIntc;
-#endif
-
-//
-// Interrupt vector table
-#ifdef XPAR_INTC_0_DEVICE_ID
-const ivt_t ivt[] = {
-	//IIC
-	{XPAR_AXI_INTC_0_AXI_IIC_0_IIC2INTC_IRPT_INTR, (XInterruptHandler)XIic_InterruptHandler, &sIic},
-	//DMA Stream to MemoryMap Interrupt handler
-	{XPAR_AXI_INTC_0_AXI_DMA_0_S2MM_INTROUT_INTR, (XInterruptHandler)fnS2MMInterruptHandler, &sAxiDma},
-	//DMA MemoryMap to Stream Interrupt handler
-	{XPAR_AXI_INTC_0_AXI_DMA_0_MM2S_INTROUT_INTR, (XInterruptHandler)fnMM2SInterruptHandler, &sAxiDma},
-	//User I/O (buttons, switches, LEDs)
-	{XPAR_AXI_INTC_0_AXI_GPIO_0_IP2INTC_IRPT_INTR, (XInterruptHandler)fnUserIOIsr, &sUserIO}
+/* Mapeamento confirmado no xparameters.h da plataforma PSN50. */
+static const ivt_t ivt[] = {
+    {XPAR_FABRIC_AXI_DMA_0_S2MM_INTROUT_INTR, (XInterruptHandler)fnS2MMInterruptHandler, &sAxiDma},
+    {XPAR_FABRIC_AXI_DMA_0_MM2S_INTROUT_INTR,   (XInterruptHandler)fnMM2SInterruptHandler, &sAxiDma},
+    {XPAR_FABRIC_AXI_GPIO_0_IP2INTC_IRPT_INTR,  (XInterruptHandler)fnUserIOIsr, &sUserIO}
 };
-#else
-const ivt_t ivt[] = {
-	//IIC
-	{XPAR_FABRIC_AXI_IIC_0_IIC2INTC_IRPT_INTR, (Xil_ExceptionHandler)XIic_InterruptHandler, &sIic},
-	//DMA Stream to MemoryMap Interrupt handler
-	{XPAR_FABRIC_AXI_DMA_0_S2MM_INTROUT_INTR, (Xil_ExceptionHandler)fnS2MMInterruptHandler, &sAxiDma},
-	//DMA MemoryMap to Stream Interrupt handler
-	{XPAR_FABRIC_AXI_DMA_0_MM2S_INTROUT_INTR, (Xil_ExceptionHandler)fnMM2SInterruptHandler, &sAxiDma},
-	//User I/O (buttons, switches, LEDs)
-	{XPAR_FABRIC_AXI_GPIO_0_IP2INTC_IRPT_INTR, (Xil_ExceptionHandler)fnUserIOIsr, &sUserIO}
-};
-#endif
 
-
-/*****************************************************************************/
-/**
-*
-* Main function
-*
-* This function is the main entry of the interrupt test. It does the following:
-*	Initialize the interrupt controller
-*	Initialize the IIC controller
-*	Initialize the User I/O driver
-*	Initialize the DMA engine
-*	Initialize the Audio I2S controller
-*	Enable the interrupts
-*	Wait for a button event then start selected task
-*	Wait for task to complete
-*
-* @param	None
-*
-* @return
-*		- XST_SUCCESS if example finishes successfully
-*		- XST_FAILURE if example fails.
-*
-* @note		None.
-*
-******************************************************************************/
-int main(void)
+static UINTPTR buffer_addr(unsigned int index)
 {
-	int Status;
-	u32 currentBuffer = 0;
-
-	UINTPTR buffers[2] = {
-			MEM_ADDR_BUFFER_A,
-			MEM_ADDR_BUFFER_A
-	};
-
-	enum {
-		RECORDING,
-		REPRODUCING
-	} state = RECORDING;
-
-
-
-	Demo.u8Verbose = 0;
-
-	//Xil_DCacheDisable();
-
-	xil_printf("\r\n--- Entering main() --- \r\n");
-
-
-	//
-	//Initialize the interrupt controller
-
-	Status = fnInitInterruptController(&sIntc);
-	if(Status != XST_SUCCESS) {
-		xil_printf("Error initializing interrupts");
-		return XST_FAILURE;
-	}
-
-
-	// Initialize IIC controller
-	Status = fnInitIic(&sIic);
-	if(Status != XST_SUCCESS) {
-		xil_printf("Error initializing I2C controller");
-		return XST_FAILURE;
-	}
-
-    // Initialize User I/O driver
-    Status = fnInitUserIO(&sUserIO);
-    if(Status != XST_SUCCESS) {
-    	xil_printf("User I/O ERROR");
-    	return XST_FAILURE;
-    }
-
-
-	//Initialize DMA
-	Status = fnConfigDma(&sAxiDma);
-	if(Status != XST_SUCCESS) {
-		xil_printf("DMA configuration ERROR");
-		return XST_FAILURE;
-	}
-
-
-	//Initialize Audio I2S
-	Status = fnInitAudio();
-	if(Status != XST_SUCCESS) {
-		xil_printf("Audio initializing ERROR");
-		return XST_FAILURE;
-	}
-
-	{
-		XTime  tStart, tEnd;
-
-		XTime_GetTime(&tStart);
-		do {
-			XTime_GetTime(&tEnd);
-		}
-		while((tEnd-tStart)/(COUNTS_PER_SECOND/10) < 20);
-	}
-	//Initialize Audio I2S
-	Status = fnInitAudio();
-	if(Status != XST_SUCCESS) {
-		xil_printf("Audio initializing ERROR");
-		return XST_FAILURE;
-	}
-
-
-	// Enable all interrupts in our interrupt vector table
-	// Make sure all driver instances using interrupts are initialized first
-	fnEnableInterrupts(&sIntc, &ivt[0], sizeof(ivt)/sizeof(ivt[0]));
-
-
-
-	xil_printf("----------------------------------------------------------\r\n");
-	xil_printf("Zybo Z7-10 DMA Audio Demo\r\n");
-	xil_printf("----------------------------------------------------------\r\n");
-	xil_printf("  Controls:\r\n");
-	xil_printf("  BTN1: Record from MIC IN\r\n");
-	xil_printf("  BTN2: Play on HPH OUT\r\n");
-	xil_printf("  BTN3: Record from LINE IN\r\n");
-	xil_printf("----------------------------------------------------------\r\n");
-
-    //main loop
-
-	Xil_DCacheInvalidateRange(
-							(INTPTR )buffers[currentBuffer],
-							5*NR_AUDIO_SAMPLES
-							);
-
-
-	xil_printf("\r\nStart Recording...\r\n");
-	fnSetMicInput();
-
-	fnAudioRecord(sAxiDma,NR_AUDIO_SAMPLES,buffers[currentBuffer]);
-
-    while(1) {
-
-    	if (Demo.fDmaS2MMEvent && state == RECORDING) {
-    		// Reset S2MM event
-			Demo.fDmaS2MMEvent = 0;
-
-			Xil_Out32(I2S_STREAM_CONTROL_REG, 0);
-			Xil_Out32(I2S_TRANSFER_CONTROL_REG, 0);
-
-			Xil_DCacheInvalidateRange((INTPTR) buffers[currentBuffer] , 5*NR_AUDIO_SAMPLES);
-
-			fnSetHpOutput();
-
-			Xil_DCacheFlushRange((INTPTR) buffers[currentBuffer] , 5*NR_AUDIO_SAMPLES);
-
-			fnAudioPlay(sAxiDma, NR_AUDIO_SAMPLES, buffers[currentBuffer]);
-
-			state = REPRODUCING;
-
-    	} else if (Demo.fDmaS2MMEvent && state == REPRODUCING) {
-    		// Reset S2MM event
-			Demo.fDmaS2MMEvent = 0;
-
-			Xil_Out32(I2S_STREAM_CONTROL_REG, 0);
-			Xil_Out32(I2S_TRANSFER_CONTROL_REG, 0);
-
-			currentBuffer = 1 - currentBuffer;
-
-			Xil_DCacheInvalidateRange((INTPTR) buffers[currentBuffer] , 5*NR_AUDIO_SAMPLES);
-
-			fnSetMicInput();
-
-			Xil_DCacheFlushRange((INTPTR) buffers[currentBuffer] , 5*NR_AUDIO_SAMPLES);
-
-			fnAudioRecord(sAxiDma, NR_AUDIO_SAMPLES, buffers[currentBuffer]);
-
-			state = RECORDING;
-		}
-
-    	/*
-		// Checking the DMA S2MM event flag
-		if (Demo.fDmaS2MMEvent)
-		{
-			xil_printf("\r\nRecording Done...");
-
-			// Reset S2MM event and record flag
-			Demo.fDmaS2MMEvent = 0;
-			Demo.fAudioRecord = 0;
-
-			if (currentBuffer == 0) {
-				currentBuffer = 1;
-			} else {
-				currentBuffer = 0;
-			}
-
-
-
-			// Disable Stream function to send data (S2MM)
-			Xil_Out32(I2S_STREAM_CONTROL_REG, 0x00000000);
-			Xil_Out32(I2S_TRANSFER_CONTROL_REG, 0x00000000);
-
-			Xil_DCacheInvalidateRange((u32) MEM_ADDR_BUFFER_A, 5*NR_AUDIO_SAMPLES);
-
-			fnSetHpOutput();
-
-			fnAudioPlay(sAxiDma, NR_AUDIO_SAMPLES, MEM_ADDR_BUFFER_A);
-
-			Demo.fAudioPlayback = 1;
-
-			//microblaze_invalidate_dcache();
-
-		}
-
-		// Checking the DMA MM2S event flag
-		if (Demo.fDmaMM2SEvent)
-		{
-			xil_printf("\r\nPlayback Done...");
-
-			// Disable Stream function to send data (S2MM)
-			Xil_Out32(I2S_STREAM_CONTROL_REG, 0x00000000);
-			Xil_Out32(I2S_TRANSFER_CONTROL_REG, 0x00000000);
-			//Flush cache
-//					//microblaze_flush_dcache();
-			Xil_DCacheFlushRange((u32) MEM_BASE_ADDR, 5*NR_AUDIO_SAMPLES);
-			//Reset MM2S event and playback flag
-			Demo.fDmaMM2SEvent = 0;
-			Demo.fAudioPlayback = 0;
-		}
-
-		// Checking the DMA Error event flag
-		if (Demo.fDmaError)
-		{
-			xil_printf("\r\nDma Error...");
-			xil_printf("\r\nDma Reset...");
-
-
-			Demo.fDmaError = 0;
-			Demo.fAudioPlayback = 0;
-			Demo.fAudioRecord = 0;
-		}*/
-
-
-
-		// Checking the btn change event
-		/*if(Demo.fUserIOEvent) {
-
-			switch(Demo.chBtn) {
-				case 'u':
-					if (!Demo.fAudioRecord && !Demo.fAudioPlayback)
-					{
-						xil_printf("\r\nStart Recording...\r\n");
-						fnSetMicInput();
-
-						fnAudioRecord(sAxiDma,NR_AUDIO_SAMPLES);
-						Demo.fAudioRecord = 1;
-					}
-					else
-					{
-						if (Demo.fAudioRecord)
-						{
-							xil_printf("\r\nStill Recording...\r\n");
-						}
-						else
-						{
-							xil_printf("\r\nStill Playing back...\r\n");
-						}
-					}
-					break;
-				case 'd':
-					if (!Demo.fAudioRecord && !Demo.fAudioPlayback)
-					{
-						xil_printf("\r\nStart Playback...\r\n");
-						fnSetHpOutput();
-						fnAudioPlay(sAxiDma,NR_AUDIO_SAMPLES);
-						Demo.fAudioPlayback = 1;
-					}
-					else
-					{
-						if (Demo.fAudioRecord)
-						{
-							xil_printf("\r\nStill Recording...\r\n");
-						}
-						else
-						{
-							xil_printf("\r\nStill Playing back...\r\n");
-						}
-					}
-					break;
-				case 'r':
-					if (!Demo.fAudioRecord && !Demo.fAudioPlayback)
-					{
-						xil_printf("\r\nStart Recording...\r\n");
-						fnSetLineInput();
-						fnAudioRecord(sAxiDma,NR_AUDIO_SAMPLES);
-						Demo.fAudioRecord = 1;
-					}
-					else
-					{
-						if (Demo.fAudioRecord)
-						{
-							xil_printf("\r\nStill Recording...\r\n");
-						}
-						else
-						{
-							xil_printf("\r\nStill Playing back...\r\n");
-						}
-					}
-					break;
-				case 'l':
-					if (!Demo.fAudioRecord && !Demo.fAudioPlayback)
-					{
-						xil_printf("\r\nStart Playback...");
-						fnSetLineOutput();
-						fnAudioPlay(sAxiDma,NR_AUDIO_SAMPLES);
-						Demo.fAudioPlayback = 1;
-					}
-					else
-					{
-						if (Demo.fAudioRecord)
-						{
-							xil_printf("\r\nStill Recording...\r\n");
-						}
-						else
-						{
-							xil_printf("\r\nStill Playing back...\r\n");
-						}
-					}
-					break;
-				default:
-					break;
-			}
-
-			// Reset the user I/O flag
-			Demo.chBtn = 0;
-			Demo.fUserIOEvent = 0;
-
-
-		}*/
-
-    }
-
-	xil_printf("\r\n--- Exiting main() --- \r\n");
-
-
-	return XST_SUCCESS;
-
+    return (UINTPTR)&audio_buffers[index][0];
 }
 
+static int start_rx(unsigned int index)
+{
+    UINTPTR addr = buffer_addr(index);
 
+    /* Evita linhas sujas na cache durante uma escrita do DMA. */
+    Xil_DCacheFlushRange((INTPTR)addr, BLOCK_BYTES);
+    Xil_DCacheInvalidateRange((INTPTR)addr, BLOCK_BYTES);
 
+    return XAxiDma_SimpleTransfer(&sAxiDma, addr, BLOCK_BYTES,
+                                  XAXIDMA_DEVICE_TO_DMA);
+}
 
+static int start_tx(unsigned int index)
+{
+    UINTPTR addr = buffer_addr(index);
 
+    /* Necessario caso o ARM tenha alterado amostras na cache. */
+    Xil_DCacheFlushRange((INTPTR)addr, BLOCK_BYTES);
 
+    return XAxiDma_SimpleTransfer(&sAxiDma, addr, BLOCK_BYTES,
+                                  XAXIDMA_DMA_TO_DEVICE);
+}
 
+int main(void)
+{
+    int status;
+    u32 stream_mask = 0U;
+    unsigned int rx_index = 0U;
+    unsigned int tx_index = 0U;
+    unsigned int rx_done = 0U;
+    unsigned int tx_done = 0U;
+    unsigned int first_block = 1U;
 
+    xil_printf("\r\nPSN50: iniciando passthrough RX/TX...\r\n");
+    Demo.u8Verbose = 0;
 
+    status = fnInitInterruptController(&sIntc);
+    if (status != XST_SUCCESS) goto fail;
+
+    status = fnInitIic(&sIic);
+    if (status != XST_SUCCESS) goto fail;
+
+    status = fnInitUserIO(&sUserIO);
+    if (status != XST_SUCCESS) goto fail;
+
+    status = fnConfigDma(&sAxiDma);
+    if (status != XST_SUCCESS) goto fail;
+
+    status = fnInitAudio();
+    if (status != XST_SUCCESS) goto fail;
+    /* Preserva a segunda inicializacao usada na demo Digilent. */
+    sleep(2);
+    status = fnInitAudio();
+    if (status != XST_SUCCESS) goto fail;
+
+    /* LINE IN -> DAC/headphones. Evita chamar fnSetHpOutput(), que
+     * reescreve R4_ANALOG_PATH e altera a selecao da entrada.
+     */
+    fnSetLineInput();
+
+    fnEnableInterrupts(&sIntc, ivt, sizeof(ivt) / sizeof(ivt[0]));
+
+    /* O IP Digilent tem UM contador de amostras compartilhado e dois
+     * contadores internos independentes: um por direcao.
+     * 1024 palavras x 4 bytes por palavra = 4096 bytes por bloco.
+     */
+    Xil_Out32(I2S_STREAM_CONTROL_REG, 0U);
+    Xil_Out32(I2S_TRANSFER_CONTROL_REG, 0U);
+    Xil_Out32(I2S_PERIOD_COUNT_REG, BLOCK_WORDS);
+    Xil_Out32(I2S_TRANSFER_CONTROL_REG, 3U); /* habilitar RX e TX I2S */
+
+    /* Primeiro gravamos A uma unica vez para haver audio valido. */
+    status = start_rx(0U);
+    if (status != XST_SUCCESS) goto fail;
+    stream_mask = I2S_S2MM_EN;
+    Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+
+    while (1) {
+        if (Demo.fDmaError) {
+            xil_printf("\r\nErro de DMA: fluxo interrompido.\r\n");
+            goto fail;
+        }
+
+        /* Primeiro bloco: A gravado -> TX A + RX B simultaneamente. */
+        if (first_block) {
+            if (!Demo.fDmaS2MMEvent) continue;
+            Demo.fDmaS2MMEvent = 0;
+
+            stream_mask &= ~I2S_S2MM_EN;
+            Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+            Xil_DCacheInvalidateRange((INTPTR)buffer_addr(0U), BLOCK_BYTES);
+
+            status = start_tx(0U);
+            if (status != XST_SUCCESS) goto fail;
+            status = start_rx(1U);
+            if (status != XST_SUCCESS) goto fail;
+
+            tx_index = 0U;
+            rx_index = 1U;
+            first_block = 0U;
+            stream_mask = I2S_S2MM_EN | I2S_MM2S_EN;
+            Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+            continue;
+        }
+
+        /* Cada evento desabilita SOMENTE seu proprio sentido de stream.
+         * Desabilitar permite que o contador interno seja recarregado.
+         */
+        if (Demo.fDmaS2MMEvent && !rx_done) {
+            Demo.fDmaS2MMEvent = 0;
+            stream_mask &= ~I2S_S2MM_EN;
+            Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+            Xil_DCacheInvalidateRange((INTPTR)buffer_addr(rx_index), BLOCK_BYTES);
+            rx_done = 1U;
+        }
+
+        if (Demo.fDmaMM2SEvent && !tx_done) {
+            Demo.fDmaMM2SEvent = 0;
+            stream_mask &= ~I2S_MM2S_EN;
+            Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+            tx_done = 1U;
+        }
+
+        if (rx_done && tx_done) {
+            unsigned int old_rx = rx_index;
+            unsigned int old_tx = tx_index;
+
+            /* O buffer que terminou a reproducao fica livre para gravar.
+             * O buffer que terminou a gravacao fica pronto para reproduzir.
+             */
+            rx_index = old_tx;
+            tx_index = old_rx;
+
+            status = start_rx(rx_index);
+            if (status != XST_SUCCESS) goto fail;
+            status = start_tx(tx_index);
+            if (status != XST_SUCCESS) goto fail;
+
+            rx_done = 0U;
+            tx_done = 0U;
+            stream_mask = I2S_S2MM_EN | I2S_MM2S_EN;
+            Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+        }
+    }
+
+fail:
+    Xil_Out32(I2S_STREAM_CONTROL_REG, 0U);
+    Xil_Out32(I2S_TRANSFER_CONTROL_REG, 0U);
+    xil_printf("\r\nPassthrough interrompido (status=%d).\r\n", status);
+    return XST_FAILURE;
+}
