@@ -74,6 +74,56 @@ static int start_tx(unsigned int index)
                                   XAXIDMA_DMA_TO_DEVICE);
 }
 
+/* Niveaux de volume en virgule fixe Q8 (256 = 1.0 = 100%, 0 = muet) */
+static const u16 volume_levels[] = {
+    0U,    /* Muet (0%) */
+    32U,   /* Tres faible (~12%) */
+    64U,   /* Faible (25%) */
+    128U,  /* Moyen (50%) */
+    192U,  /* Fort (75%) */
+    256U   /* Max (100%) */
+};
+#define NUM_VOLUMES (sizeof(volume_levels) / sizeof(volume_levels[0]))
+static unsigned int vol_idx = 3U; /* Demarre a 50% (index 3) */
+
+#define SAMPLE24_MIN (-8388608)
+#define SAMPLE24_MAX (8388607)
+
+/* Seuils d'ecretage (plus le seuil est bas, plus la saturation/distorsion est forte) */
+static const int32_t clip_thresholds[] = {
+    8388607,   /* 0: Aucune saturation (seuil max 24 bits) */
+    4194303,   /* 1: Legere (~50% du max) */
+    2097151,   /* 2: Moderee (~25% du max) */
+    1048575,   /* 3: Forte (~12.5% du max) */
+    524287     /* 4: Tres forte / drive (~6.25% du max) */
+};
+#define NUM_CLIP_LEVELS (sizeof(clip_thresholds) / sizeof(clip_thresholds[0]))
+static unsigned int clip_idx = 0U; /* Demarre sans saturation (index 0) */
+
+static void apply_volume_to_block(u32 *buf, unsigned int num_words, u16 gain_q8)
+{
+	int32_t limit = clip_thresholds[clip_idx];
+    for (unsigned int i = 0U; i < num_words; i++) {
+        /* Echantillon signe 24 bits (etendu sur 32 bits) */
+        int32_t sample = (int32_t)(buf[i] << 8) >> 8;
+
+        /* Multiplication en virgule fixe Q8 (division par 256) */
+        sample = (sample * (int32_t)gain_q8) >> 8;
+
+        /* Ecretage (saturation) sur la plage 24 bits signee */
+        if (sample > limit) {  // or SAMPLE24_MAX
+            sample = limit;
+        } else if (sample < -limit) { // or SAMPLE24_MIN
+        	sample = -limit;
+        }
+
+        /* Re-masquage sur 24 bits pour le format I2S / DMA */
+        buf[i] = ((uint32_t)sample) & 0x00FFFFFFU;
+    }
+}
+
+
+
 int main(void)
 {
     int status;
@@ -84,7 +134,7 @@ int main(void)
     unsigned int tx_done = 0U;
     unsigned int first_block = 1U;
 
-    xil_printf("\r\nPSN50: iniciando passthrough RX/TX...\r\n");
+    xil_printf("\r\nPSN50: passthrough RX/TX initiated...\r\n");
     Demo.u8Verbose = 0;
 
     status = fnInitInterruptController(&sIntc);
@@ -164,6 +214,10 @@ int main(void)
             stream_mask &= ~I2S_S2MM_EN;
             Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
             Xil_DCacheInvalidateRange((INTPTR)buffer_addr(rx_index), BLOCK_BYTES);
+
+            /* Appliquer le niveau de volume actuel au bloc recu */
+            apply_volume_to_block(audio_buffers[rx_index], BLOCK_WORDS, volume_levels[vol_idx]);
+
             rx_done = 1U;
         }
 
@@ -193,6 +247,24 @@ int main(void)
             tx_done = 0U;
             stream_mask = I2S_S2MM_EN | I2S_MM2S_EN;
             Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
+        }
+
+        /* 2) Verifier BTN0 pour passer au niveau de volume suivant */
+        if (Demo.fUserIOEvent) {
+        	Demo.fUserIOEvent = 0;
+
+        	if (Demo.chBtn & 0x01U) { /* BTN0 */
+        		vol_idx = (vol_idx + 1U) % NUM_VOLUMES;
+                xil_printf("Volume index: %u/%u (gain=%u/256)\r\n",
+                vol_idx, (unsigned int)(NUM_VOLUMES - 1U), volume_levels[vol_idx]);
+            }
+
+        	/*if (Demo.chBtn & 0x02U) { // BTN1
+        	    clip_idx = (clip_idx + 1U) % NUM_CLIP_LEVELS;
+        	    xil_printf("Clip index: %u/%u (threshold=%ld)\r\n",
+        	    clip_idx, (unsigned int)(NUM_CLIP_LEVELS - 1U),
+        	             (long)clip_thresholds[clip_idx]);
+        	}*/
         }
     }
 
