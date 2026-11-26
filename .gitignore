@@ -29,3 +29,6 @@
 
 /vitis/system_wrapper_v1/
 /vitis/audio_app_system/
+
+/ps7_init.*
+/ps7_init_gpl.*
