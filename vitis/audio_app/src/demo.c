@@ -241,22 +241,34 @@ int main(void) {
       Xil_Out32(I2S_STREAM_CONTROL_REG, stream_mask);
     }
 
-    /* Check BTN0 to switch to the next volume level */
+    /* Check buttons to switch to the desired volume level */
     if (Demo.fUserIOEvent) {
-      Demo.fUserIOEvent = 0;
+    	/* Detects new pressings */
+    	static u32 botoesAnteriores = 0U;
 
-      if (Demo.chBtn & 0x01U) { /* BTN0 */
-        vol_idx = (vol_idx + 1U) % NUM_VOLUMES;
-        xil_printf("Volume index: %u/%u (gain=%u/256)\r\n", vol_idx,
-                   (unsigned int)(NUM_VOLUMES - 1U), volume_levels[vol_idx]);
-      }
+    	u32 botoes = XGpio_DiscreteRead(&sUserIO, 1) & 0x0FU;
 
-      /*if (Demo.chBtn & 0x02U) { // BTN1
-          clip_idx = (clip_idx + 1U) % NUM_CLIP_LEVELS;
-          xil_printf("Clip index: %u/%u (threshold=%ld)\r\n",
-          clip_idx, (unsigned int)(NUM_CLIP_LEVELS - 1U),
-                   (long)clip_thresholds[clip_idx]);
-      }*/
+    	u32 pressionados = botoes & ~botoesAnteriores;
+
+    	botoesAnteriores = botoes;
+
+    	/* BTN0: volume up*/
+    	if (pressionados & 0x01U)
+    	{
+    	    if (vol_idx < NUM_VOLUMES - 1U)
+    	        vol_idx++;
+
+    	    xil_printf("Volume = %u/5\r\n", vol_idx);
+    	}
+
+    	/* BTN1: volume down */
+    	if (pressionados & 0x02U)
+    	{
+    	    if (vol_idx > 0U)
+    	        vol_idx--;
+
+    	    xil_printf("Volume = %u/5\r\n", vol_idx);
+    	}
     }
   }
 

@@ -211,3 +211,350 @@ con
 12:48:36 INFO  : Successfully done setting workspace for the tool. 
 12:48:38 INFO  : Registering command handlers for Vitis TCF services
 12:48:38 INFO  : Successfully done query RDI_DATADIR 
+15:38:48 INFO  : Launching XSCT server: xsct.bat -n  -interactive C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\temp_xsdb_launch_script.tcl
+15:38:51 INFO  : XSCT server has started successfully.
+15:38:51 INFO  : plnx-install-location is set to ''
+15:38:51 INFO  : Successfully done setting XSCT server connection channel  
+15:38:51 INFO  : Successfully done setting workspace for the tool. 
+15:38:52 INFO  : Successfully done query RDI_DATADIR 
+15:38:52 INFO  : Registering command handlers for Vitis TCF services
+15:40:00 INFO  : Hardware specification for platform project 'system_wrapper_v1' is updated.
+15:41:21 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+15:42:41 INFO  : Hardware specification for platform project 'system_wrapper_v1' is updated.
+15:42:58 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+15:43:02 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+15:49:57 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+15:50:09 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+15:50:10 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+15:50:10 INFO  : 'jtag frequency' command is executed.
+15:50:11 INFO  : Context for 'APU' is selected.
+15:50:11 INFO  : System reset is completed.
+15:50:14 INFO  : 'after 3000' command is executed.
+15:50:15 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+15:50:16 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+15:50:17 INFO  : Context for 'APU' is selected.
+15:50:17 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+15:50:17 INFO  : 'configparams force-mem-access 1' command is executed.
+15:50:18 INFO  : Context for 'APU' is selected.
+15:50:18 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+15:50:18 INFO  : 'ps7_init' command is executed.
+15:50:18 INFO  : 'ps7_post_config' command is executed.
+15:50:19 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+15:50:19 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+15:50:19 INFO  : 'configparams force-mem-access 0' command is executed.
+15:50:19 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+15:50:19 INFO  : Memory regions updated for context APU
+15:50:20 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+15:50:20 INFO  : 'con' command is executed.
+15:50:20 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+15:50:20 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'
+15:52:18 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+15:52:23 INFO  : Disconnected from the channel tcfchan#5.
+15:52:24 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+15:52:24 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+15:52:24 INFO  : 'jtag frequency' command is executed.
+15:52:24 INFO  : Context for 'APU' is selected.
+15:52:24 INFO  : System reset is completed.
+15:52:27 INFO  : 'after 3000' command is executed.
+15:52:27 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+15:52:29 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+15:52:29 INFO  : Context for 'APU' is selected.
+15:52:29 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+15:52:29 INFO  : 'configparams force-mem-access 1' command is executed.
+15:52:29 INFO  : Context for 'APU' is selected.
+15:52:29 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+15:52:29 INFO  : 'ps7_init' command is executed.
+15:52:29 INFO  : 'ps7_post_config' command is executed.
+15:52:29 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+15:52:29 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+15:52:29 INFO  : 'configparams force-mem-access 0' command is executed.
+15:52:29 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+15:52:29 INFO  : Memory regions updated for context APU
+15:52:29 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+15:52:29 INFO  : 'con' command is executed.
+15:52:29 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+15:52:29 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'
+15:53:05 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+15:53:13 INFO  : Disconnected from the channel tcfchan#6.
+15:53:14 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+15:53:14 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+15:53:14 INFO  : 'jtag frequency' command is executed.
+15:53:14 INFO  : Context for 'APU' is selected.
+15:53:14 INFO  : System reset is completed.
+15:53:17 INFO  : 'after 3000' command is executed.
+15:53:17 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+15:53:19 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+15:53:19 INFO  : Context for 'APU' is selected.
+15:53:19 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+15:53:19 INFO  : 'configparams force-mem-access 1' command is executed.
+15:53:19 INFO  : Context for 'APU' is selected.
+15:53:19 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+15:53:19 INFO  : 'ps7_init' command is executed.
+15:53:19 INFO  : 'ps7_post_config' command is executed.
+15:53:19 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+15:53:19 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+15:53:19 INFO  : 'configparams force-mem-access 0' command is executed.
+15:53:19 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+15:53:19 INFO  : Memory regions updated for context APU
+15:53:19 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+15:53:19 INFO  : 'con' command is executed.
+15:53:19 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+15:53:19 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'
+16:00:19 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+16:00:26 INFO  : Disconnected from the channel tcfchan#7.
+16:00:27 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+16:00:27 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+16:00:27 INFO  : 'jtag frequency' command is executed.
+16:00:27 INFO  : Context for 'APU' is selected.
+16:00:27 INFO  : System reset is completed.
+16:00:30 INFO  : 'after 3000' command is executed.
+16:00:30 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+16:00:31 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+16:00:31 INFO  : Context for 'APU' is selected.
+16:00:31 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+16:00:31 INFO  : 'configparams force-mem-access 1' command is executed.
+16:00:31 INFO  : Context for 'APU' is selected.
+16:00:31 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+16:00:32 INFO  : 'ps7_init' command is executed.
+16:00:32 INFO  : 'ps7_post_config' command is executed.
+16:00:32 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:00:32 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+16:00:32 INFO  : 'configparams force-mem-access 0' command is executed.
+16:00:32 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+16:00:32 INFO  : Memory regions updated for context APU
+16:00:32 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:00:32 INFO  : 'con' command is executed.
+16:00:32 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+16:00:32 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'
+16:05:42 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+16:05:52 INFO  : Disconnected from the channel tcfchan#8.
+16:05:53 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+16:05:53 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+16:05:53 INFO  : 'jtag frequency' command is executed.
+16:05:53 INFO  : Context for 'APU' is selected.
+16:05:53 INFO  : System reset is completed.
+16:05:56 INFO  : 'after 3000' command is executed.
+16:05:56 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+16:05:58 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+16:05:58 INFO  : Context for 'APU' is selected.
+16:05:58 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+16:05:58 INFO  : 'configparams force-mem-access 1' command is executed.
+16:05:58 INFO  : Context for 'APU' is selected.
+16:05:58 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+16:05:58 INFO  : 'ps7_init' command is executed.
+16:05:58 INFO  : 'ps7_post_config' command is executed.
+16:05:58 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:05:58 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+16:05:58 INFO  : 'configparams force-mem-access 0' command is executed.
+16:05:58 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+16:05:58 INFO  : Memory regions updated for context APU
+16:05:58 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:05:58 INFO  : 'con' command is executed.
+16:05:58 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+16:05:58 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'
+16:08:31 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+16:08:38 INFO  : Disconnected from the channel tcfchan#9.
+16:08:39 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+16:08:40 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+16:08:40 INFO  : 'jtag frequency' command is executed.
+16:08:40 INFO  : Context for 'APU' is selected.
+16:08:40 INFO  : System reset is completed.
+16:08:43 INFO  : 'after 3000' command is executed.
+16:08:43 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+16:08:44 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+16:08:44 INFO  : Context for 'APU' is selected.
+16:08:44 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+16:08:44 INFO  : 'configparams force-mem-access 1' command is executed.
+16:08:44 INFO  : Context for 'APU' is selected.
+16:08:44 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+16:08:44 INFO  : 'ps7_init' command is executed.
+16:08:44 INFO  : 'ps7_post_config' command is executed.
+16:08:44 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:08:44 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+16:08:44 INFO  : 'configparams force-mem-access 0' command is executed.
+16:08:44 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+16:08:45 INFO  : Memory regions updated for context APU
+16:08:45 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:08:45 INFO  : 'con' command is executed.
+16:08:45 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+16:08:45 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'
+16:10:11 INFO  : Checking for BSP changes to sync application flags for project 'audio_app'...
+16:10:21 INFO  : Disconnected from the channel tcfchan#10.
+16:10:22 INFO  : Connected to target on host '127.0.0.1' and port '3121'.
+16:10:22 INFO  : Jtag cable 'Digilent Zybo Z7 210351B804E3A' is selected.
+16:10:22 INFO  : 'jtag frequency' command is executed.
+16:10:22 INFO  : Context for 'APU' is selected.
+16:10:23 INFO  : System reset is completed.
+16:10:26 INFO  : 'after 3000' command is executed.
+16:10:26 INFO  : 'targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1' command is executed.
+16:10:27 INFO  : FPGA configured successfully with bitstream "C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit"
+16:10:27 INFO  : Context for 'APU' is selected.
+16:10:27 INFO  : Hardware design information is loaded from 'C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa'.
+16:10:27 INFO  : 'configparams force-mem-access 1' command is executed.
+16:10:27 INFO  : Context for 'APU' is selected.
+16:10:27 INFO  : Sourcing of 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl' is done.
+16:10:27 INFO  : 'ps7_init' command is executed.
+16:10:27 INFO  : 'ps7_post_config' command is executed.
+16:10:27 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:10:27 INFO  : The application 'C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf' is downloaded to processor 'ps7_cortexa9_0'.
+16:10:27 INFO  : 'configparams force-mem-access 0' command is executed.
+16:10:27 INFO  : ----------------XSDB Script----------------
+connect -url tcp:127.0.0.1:3121
+targets -set -nocase -filter {name =~"APU*"}
+rst -system
+after 3000
+targets -set -filter {jtag_cable_name =~ "Digilent Zybo Z7 210351B804E3A" && level==0} -index 1
+fpga -file C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/bitstream/system_wrapper_v1.bit
+targets -set -nocase -filter {name =~"APU*"}
+loadhw -hw C:/Users/benteslp/Documents/PSN50/vitis/system_wrapper_v1/export/system_wrapper_v1/hw/system_wrapper_v1.xsa -mem-ranges [list {0x40000000 0xbfffffff}]
+configparams force-mem-access 1
+targets -set -nocase -filter {name =~"APU*"}
+source C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/_ide/psinit/ps7_init.tcl
+ps7_init
+ps7_post_config
+targets -set -nocase -filter {name =~ "*A9*#0"}
+dow C:/Users/benteslp/Documents/zybo-z7-10-guitar-pedal/vitis/audio_app/Debug/audio_app.elf
+configparams force-mem-access 0
+----------------End of Script----------------
+
+16:10:27 INFO  : Memory regions updated for context APU
+16:10:27 INFO  : Context for processor 'ps7_cortexa9_0' is selected.
+16:10:27 INFO  : 'con' command is executed.
+16:10:27 INFO  : ----------------XSDB Script (After Launch)----------------
+targets -set -nocase -filter {name =~ "*A9*#0"}
+con
+----------------End of Script----------------
+
+16:10:27 INFO  : Launch script is exported to file 'C:\Users\benteslp\Documents\zybo-z7-10-guitar-pedal\vitis\.sdk\launch_scripts\single_application_debug\debugger_audio_app-default.tcl'

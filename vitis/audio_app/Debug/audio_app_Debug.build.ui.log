@@ -1,10 +1,0 @@
-2026-11-19T13:35:11.424537100255-13:35:11 **** Incremental Build of configuration Debug for project audio_app ****
-000-make all 
-000-make --no-print-directory pre-build
-000-a9-linaro-pre-build-step
-000-' '
-000-make --no-print-directory main-build
-000-make[1]: Nothing to be done for 'main-build'.
-00255-
-13:35:11 Build Finished (took 492ms)
-
